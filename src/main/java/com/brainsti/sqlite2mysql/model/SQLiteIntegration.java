@@ -16,7 +16,11 @@ import com.brainsti.sqlite2mysql.model.entity.Contact;
 public class SQLiteIntegration {
     private static SessionFactory sessionFactory = null;  
     private static ServiceRegistry serviceRegistry = null;  
-       
+
+    public SQLiteIntegration() {
+    	configureSessionFactory();
+	}
+    
     private SessionFactory configureSessionFactory() throws HibernateException {  
         Configuration configuration = new Configuration();  
         configuration.configure();  
@@ -55,12 +59,8 @@ public class SQLiteIntegration {
              
             // Fetching saved data
             return session.createQuery("from Contact").list();
-             
         } catch (Exception ex) {
             ex.printStackTrace();
-             
-            // Rolling back the changes to make the data consistent in case of any failure 
-            // in between multiple database write operations.
             tx.rollback();
         } finally{
             if(session != null) {
@@ -68,5 +68,51 @@ public class SQLiteIntegration {
             }
         }
 		return null;
+    }
+    
+    public List executeQuery(String query) {
+    	Session session = null;
+    	
+    	try {
+	    	session = sessionFactory.openSession();
+	    	return session.createQuery(query).list();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		session.close();	
+    	}
+    	return null;
+    }
+    
+    public void save(Object registry) {
+    	Session session = null;
+    	
+    	try {
+	    	session = sessionFactory.openSession();
+	    	session.beginTransaction();
+	    	session.save(registry);
+	    	session.flush();
+	    	session.getTransaction().commit();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		session.close();
+    	}
+    }
+    
+    public void executeSQLStatement(String sqlStatement) {
+    	Session session = null;
+    	
+    	try {
+	    	session = sessionFactory.openSession();
+	    	session.beginTransaction();
+	    	session.createQuery(sqlStatement).executeUpdate();
+	    	session.getTransaction().commit();
+	    	session.flush();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		session.close();	
+    	}
     }
 }

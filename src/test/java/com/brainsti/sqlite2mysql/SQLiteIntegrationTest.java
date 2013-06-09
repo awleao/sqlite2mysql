@@ -5,6 +5,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.brainsti.sqlite2mysql.model.SQLiteIntegration;
@@ -14,6 +15,7 @@ import com.brainsti.sqlite2mysql.model.entity.Contact;
 public class SQLiteIntegrationTest {
 	
 	@Test
+	@Ignore
 	public void listAllContactsTest(){
 		SQLiteIntegration sqlite = new SQLiteIntegration();
 		List<Contact> contactList = sqlite.listAllContacts();
